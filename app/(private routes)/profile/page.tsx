@@ -23,7 +23,7 @@ async function ProfilePage() {
              </div>
            <div className={css.avatarWrapper}>
             <Image
-              src="https://ac.goit.global/fullstack/react/avatar-default.jpg"
+              src={user?.avatar || "https://ac.goit.global/fullstack/react/avatar-default.jpg"}
               alt="User Avatar"
               width={120}
               height={120}

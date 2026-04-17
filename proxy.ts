@@ -28,11 +28,13 @@ export async function proxy(request: NextRequest) {
                 for (const cookieString of cookieArray) {
                     const parsed = parse(cookieString);
 
-                    const options = {
-                        expires: parsed.Expires ? new Date(parsed.Expires) : undefined,
-                        patch: parsed.Path,
-                        maxAge: Number(parsed["Max-Age"]),
-                    };
+                    const maxAge = Number(parsed["Max-Age"]);
+
+const options = {
+  expires: parsed.Expires ? new Date(parsed.Expires) : undefined,
+  path: parsed.Path,
+  ...(Number.isFinite(maxAge) ? { maxAge } : {}),
+};
                     if (parsed.accessToken) {
                         cookieStore.set("accessToken", parsed.accessToken, options);
                     }
@@ -41,7 +43,7 @@ export async function proxy(request: NextRequest) {
                     }
                 }
                 if (isPublicRoute) {
-                    return NextResponse.redirect(new URL("/profile", request.url), {
+                    return NextResponse.redirect(new URL("/", request.url), {
                         headers: {
                             Cookie: cookieStore.toString(),
                         },
@@ -68,11 +70,11 @@ export async function proxy(request: NextRequest) {
                 return NextResponse.next();
             }
             if (isPublicRoute) {
-                return NextResponse.redirect(new URL("/profile", request.url));
+                return NextResponse.redirect(new URL("/", request.url));
             }
     }
    
 }
 export const config = {
-    matcher: ["/profile", "/profile/edit", "/sign-in", "/sign-up"],
+    matcher: ["/profile/:path*", "/notes/:path*", "/sign-in", "/sign-up"],
 };

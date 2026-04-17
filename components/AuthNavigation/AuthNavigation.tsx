@@ -26,11 +26,11 @@ function AuthNavigation() {
     <>
       {isAuthenticated ? (
         <>
-          {/* <li className={css.navigationItem}> 
+          <li className={css.navigationItem}> 
              <Link href="/profile" prefetch={false} className={css.navigationLink}>
               Profile
             </Link>
-          </li>  */}
+          </li> 
 
           <li className={css.navigationItem}>
             <p className={css.userEmail}>{user?.email}</p>

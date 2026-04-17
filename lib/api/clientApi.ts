@@ -1,25 +1,20 @@
 import { Note } from "@/types/note";
 import type { User } from "../../types/user";
-import axios from "axios";
+import { api } from "./api";
 
 
-
-export const api = axios.create({
-    baseURL: "https://notehub-api.goit.study/",
-    withCredentials: true,
-  });
+export interface FetchNotesResponse {
+    notes: Note[];
+    totalPages: number;
+  }
   
-  export interface FetchNotesResponse {
-      notes: Note[];
-      totalPages: number;
-    }
-    
-    interface FetchNotesParams {
-      page?: number;
-      search?: string;
-      perPage?: number;
-      tag?: string;
-    }
+  interface FetchNotesParams {
+    page?: number;
+    search?: string;
+    perPage?: number;
+    tag?: string;
+  }
+
 type RegisterRequest = {
     email: string;
     password: string;
@@ -37,14 +32,12 @@ export type CreateNotePayload = {
 export type CheckSessionRequest = {
     success: boolean;
 };
-
 export const checkSession = async (): Promise<CheckSessionRequest> => {
     const res = await api.get<CheckSessionRequest>("/auth/session");
     return res.data;
-};
-
-export const getMe = async () => {
-    const {data} = await api.get("/users/me");
+  };
+export const getMe = async (): Promise<User> => {
+    const {data} = await api.get<User>("/users/me");
     return data;
 }
 
@@ -58,34 +51,8 @@ export const register = async (data: RegisterRequest) => {
     return res.data;
 }
 
-export const logout = async () => {
-    const res = await api.post<User>("/auth/logout");
-    return res.data;
-}
-export const fetchNotes = async ({
-        page = 1,
-        search = "",
-        perPage = 12,
-        tag,
-    }: FetchNotesParams): Promise<FetchNotesResponse> => {
-        const res = await api.get<FetchNotesResponse>(
-          "/notes",
-            {
-                params: {
-                    page,
-                    search,
-                    perPage,
-                    ...(tag ? { tag } : {}),
-              },
-          }
-        );
-     return res.data;
-    };
-
-export async function fetchNoteById(id: Note["id"]) {
-    const { data } = await api.get<Note>(`/notes/${id}` 
-    );
-    return data;
+export const logout = async (): Promise<void> => {
+    await api.post("/auth/logout");
 }
 
   
@@ -98,3 +65,27 @@ export const deleteNote = async (noteId: Note["id"]): Promise<Note> => {
     const { data } = await api.delete<Note>(`/notes/${noteId}`);
     return data;
 };
+export const fetchNotes = async ({
+    page = 1,
+    search = "",
+    perPage = 12,
+    tag,
+  }: FetchNotesParams): Promise<FetchNotesResponse> => {
+    const res = await api.get<FetchNotesResponse>(
+      "/notes",
+        {
+            params: {
+                page,
+                search,
+                perPage,
+                ...(tag ? { tag } : {}),
+          },
+      }
+    );
+  return res.data;
+};
+export async function fetchNoteById(id: Note["id"]) {
+    const { data } = await api.get<Note>(`/notes/${id}`);
+    return data;
+    }
+    

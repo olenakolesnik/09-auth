@@ -2,23 +2,27 @@ import { cookies } from "next/headers";
 
 import { User } from "@/types/user";
 
-import axios from "axios";
+import { api } from "./api";
 
-const API = axios.create({
-  baseURL: "http://localhost:3000/api",
-  withCredentials: true,
-});
+export const getCookieHeader = async () => {
+  const cookieStore = await cookies();
+
+ return cookieStore
+    .getAll()
+    .map(c => `${c.name}=${c.value}`)
+    .join("; ");
+};
+
 
 
 export const getServerMe = async (): Promise<User> => {
     
-    const cookieStore = await cookies();
-    const {data} = await API.get('/users/me', {
+    const {data} = await api.get('/users/me', {
       headers: {
-        
-        Cookie: cookieStore.toString(),
+        Cookie: await getCookieHeader(),
       },
     });
    
     return data;
-  };
+};
+  

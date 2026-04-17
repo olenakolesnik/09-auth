@@ -3,27 +3,28 @@ import css from "./SignInPage.module.css";
 import { login } from "@/lib/api/clientApi";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/lib/store/authStore";
+import { useState } from "react";
 
 const SignInPage = () => {
   const router = useRouter();
   const setUser = useAuthStore(state => state.setUser);
-
+const [error, setError] = useState<string | null>(null);
   const handleSubmit = async (formData: FormData) => {
     const email = formData.get("email") as string;
     const password = formData.get("password") as string;
-
+    setError(null);
     try {
       const user = await login({ email, password });
-      if (user) {
-        setUser(user);
-        router.push("/profile");
+      setUser(user);
+      router.push("/profile");
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message);
       } else {
-        console.error("Login failed: No user returned");
+        setError("Invalid email or password");
       }
-    } catch (error) {
-      console.error("Login error:", error);
     }
-  }
+  };
     return (
         <main className={css.mainContent}>
         <form className={css.form} action={handleSubmit}>
@@ -45,7 +46,7 @@ const SignInPage = () => {
              </button>
            </div>
        
-           <p className={css.error}>Error</p>
+           {error && <p className={css.error}>{error}</p>}
          </form>
        </main>
     )
