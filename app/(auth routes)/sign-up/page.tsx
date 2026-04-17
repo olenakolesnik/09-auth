@@ -2,19 +2,21 @@
 import css from "./SignUpPage.module.css";
 import { register } from "@/lib/api/clientApi";
 import { useRouter } from "next/navigation";
-
+import { useAuthStore } from "@/lib/store/authStore";
 const SignUpPage = () => {
   const router = useRouter();
-
+  const setUser = useAuthStore(state => state.setUser);
   const handleSubmit = async (formData: FormData) => {
     const email = formData.get("email") as string;
     const password = formData.get("password") as string;
 
     try {
-      const res = await register({ email, password });
-router.push("/profile");
-      if (!res) {
-        throw new Error("Failed to register");
+      const user = await register({ email, password });
+      if (user) {
+        setUser(user);
+        router.push("/profile");
+      } else {
+        console.error("Registration failed: No user returned");
       }
     } catch (error) {
       console.error("Registration error:", error);

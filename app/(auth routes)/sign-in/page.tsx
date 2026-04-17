@@ -2,19 +2,23 @@
 import css from "./SignInPage.module.css";
 import { login } from "@/lib/api/clientApi";
 import { useRouter } from "next/navigation";
+import { useAuthStore } from "@/lib/store/authStore";
 
 const SignInPage = () => {
   const router = useRouter();
+  const setUser = useAuthStore(state => state.setUser);
 
   const handleSubmit = async (formData: FormData) => {
     const email = formData.get("email") as string;
     const password = formData.get("password") as string;
 
     try {
-      const res = await login({ email, password });
-router.push("/profile");
-      if (!res) {
-        throw new Error("Failed to log in");
+      const user = await login({ email, password });
+      if (user) {
+        setUser(user);
+        router.push("/profile");
+      } else {
+        console.error("Login failed: No user returned");
       }
     } catch (error) {
       console.error("Login error:", error);

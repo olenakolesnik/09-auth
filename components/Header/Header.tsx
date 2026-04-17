@@ -1,3 +1,4 @@
+import AuthNavigation from '../AuthNavigation/AuthNavigation';
 import css from './Header.module.css';
 import Link from 'next/link';
 
@@ -15,15 +16,16 @@ const Header = () => {
         <li>
           <Link href="/notes/filter/all">Notes</Link>
           </li>
-          <li>
+          {/* <li>
             <Link href="/profile">Profile</Link>
-          </li>
-          <li>
+          </li> */}
+          {/* <li>
             <Link href="/sign-in">Login</Link>
           </li>
           <li>
-            <Link href="/sign-up">Sign up</Link>
-          </li>
+            <Link href="/sign-up">Sign up</Link> */}
+          {/* </li> */}
+          <AuthNavigation />
       </ul>
     </nav>
   </header>

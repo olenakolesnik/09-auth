@@ -1,0 +1,78 @@
+import { NextRequest, NextResponse } from "next/server";
+import { cookies } from "next/headers";
+import { parse } from "cookie";
+import { api } from "@/lib/api/api";
+
+
+const privateRoutes = ["/profile", "/profile/edit"];
+const publicRoutes = ["/sign-in", "/sign-up"];
+export async function proxy(request: NextRequest) {
+    const { pathname } = request.nextUrl;
+    const cookieStore = await cookies();
+    const accessToken = cookieStore.get("accessToken")?.value;
+    const refreshToken = cookieStore.get("refreshToken")?.value;
+
+    const isPrivateRoute = privateRoutes.some((route) => pathname.startsWith(route));
+    const isPublicRoute = publicRoutes.some((route) => pathname.startsWith(route));
+
+    if (!accessToken) {
+        if (refreshToken) {
+            const { headers } = await api.get("/auth/session", {
+                headers: {
+                    Cookie: cookieStore.toString()
+                }
+            });
+            const setCookie = headers["set-cookie"];
+            if (setCookie) {
+                const cookieArray = Array.isArray(setCookie) ? setCookie : [setCookie];
+                for (const cookieString of cookieArray) {
+                    const parsed = parse(cookieString);
+
+                    const options = {
+                        expires: parsed.Expires ? new Date(parsed.Expires) : undefined,
+                        patch: parsed.Path,
+                        maxAge: Number(parsed["Max-Age"]),
+                    };
+                    if (parsed.accessToken) {
+                        cookieStore.set("accessToken", parsed.accessToken, options);
+                    }
+                    if (parsed.refreshToken) {
+                        cookieStore.set("refreshToken", parsed.refreshToken, options);
+                    }
+                }
+                if (isPublicRoute) {
+                    return NextResponse.redirect(new URL("/profile", request.url), {
+                        headers: {
+                            Cookie: cookieStore.toString(),
+                        },
+                    });
+                }
+                if (isPrivateRoute) {
+                    return NextResponse.next({
+                        headers: {
+                            Cookie: cookieStore.toString(),
+                        },
+                    });
+                }
+            }
+        
+            } 
+                if (isPublicRoute) {
+                    return NextResponse.next();
+                }
+                if (isPrivateRoute) {
+                    return NextResponse.redirect(new URL("/sign-in", request.url));
+                }
+            } else {
+            if (isPrivateRoute) {
+                return NextResponse.next();
+            }
+            if (isPublicRoute) {
+                return NextResponse.redirect(new URL("/profile", request.url));
+            }
+    }
+   
+}
+export const config = {
+    matcher: ["/profile", "/profile/edit", "/sign-in", "/sign-up"],
+};

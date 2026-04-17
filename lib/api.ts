@@ -1,10 +1,11 @@
 import axios from "axios";
 import type { Note } from "../types/note";
+import { User } from "@/types/user";
 
 
 
 const API = axios.create({
-    baseURL: "https://localhost:3000/api",
+    baseURL: "http://localhost:3000/api",
     withCredentials: true,
 });
 
@@ -24,7 +25,21 @@ export type CreateNotePayload = {
     title: string;
     content: string;
     tag: "Todo" | "Work" | "Personal" | "Meeting" | "Shopping";
-  };
+};
+  
+export type CheckSessionRequest = {
+    success: boolean;
+};
+
+export const checkSession = async () => {
+    const {data} = await API.get<CheckSessionRequest>("/auth/session");
+    return data;
+};
+
+export const getMe = async () => {
+    const {data} = await API.get<User>("/users/me");
+    return data;
+}
 
 export const fetchNotes = async ({
     page = 1,
@@ -62,3 +77,4 @@ export const deleteNote = async (noteId: Note["id"]): Promise<Note> => {
     const { data } = await API.delete<Note>(`/notes/${noteId}`);
     return data;
 };
+
