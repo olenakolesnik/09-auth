@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 
 import NotesClient from "./Notes.client";
 import { QueryClient, dehydrate, HydrationBoundary } from "@tanstack/react-query";
-import { fetchNotes } from "@/lib/api";
+import { fetchNotes } from "@/lib/api/clientApi";
 
 interface NotesFilterProps {
     params: Promise<{ slug: string[] }>;

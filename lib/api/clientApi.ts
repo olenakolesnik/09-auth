@@ -1,7 +1,25 @@
+import { Note } from "@/types/note";
 import type { User } from "../../types/user";
+import axios from "axios";
 
-import { api } from "./api";
 
+
+export const api = axios.create({
+    baseURL: "/api",
+    withCredentials: true,
+  });
+  
+  export interface FetchNotesResponse {
+      notes: Note[];
+      totalPages: number;
+    }
+    
+    interface FetchNotesParams {
+      page?: number;
+      search?: string;
+      perPage?: number;
+      tag?: string;
+    }
 type RegisterRequest = {
     email: string;
     password: string;
@@ -11,6 +29,11 @@ type LoginRequest = {
     email: string;
     password: string;
 }
+export type CreateNotePayload = {
+    title: string;
+    content: string;
+    tag: "Todo" | "Work" | "Personal" | "Meeting" | "Shopping";
+};
 export type CheckSessionRequest = {
     success: boolean;
 };
@@ -39,3 +62,39 @@ export const logout = async () => {
     const res = await api.post<User>("/auth/logout");
     return res.data;
 }
+export const fetchNotes = async ({
+        page = 1,
+        search = "",
+        perPage = 12,
+        tag,
+    }: FetchNotesParams): Promise<FetchNotesResponse> => {
+        const res = await api.get<FetchNotesResponse>(
+          "/notes",
+            {
+                params: {
+                    page,
+                    search,
+                    perPage,
+                    ...(tag ? { tag } : {}),
+              },
+          }
+        );
+     return res.data;
+    };
+
+export async function fetchNoteById(id: Note["id"]) {
+    const { data } = await api.get<Note>(`/notes/${id}` 
+    );
+    return data;
+}
+
+  
+export const createNote = async (payload: CreateNotePayload): Promise<Note> => {
+    const { data } = await api.post("/notes", payload);
+    return data;
+};
+
+export const deleteNote = async (noteId: Note["id"]): Promise<Note> => {
+    const { data } = await api.delete<Note>(`/notes/${noteId}`);
+    return data;
+};

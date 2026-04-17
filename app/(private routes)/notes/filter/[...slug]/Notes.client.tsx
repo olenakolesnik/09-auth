@@ -3,13 +3,13 @@
 import { useState } from "react";
 import { useQuery, keepPreviousData, DehydratedState } from "@tanstack/react-query";
 import { useDebouncedCallback } from "use-debounce";
-import { fetchNotes } from "@/lib/api";
+import { fetchNotes } from "@/lib/api/clientApi";
 
 import SearchBox from "@/components/SearchBox/SearchBox";
 import Pagination from "@/components/Pagination/Pagination";
 import NoteList from "@/components/NoteList/NoteList";
 import css from "./NotesPage.module.css";
-import {FetchNotesResponse} from "@/lib/api"
+import {FetchNotesResponse} from "@/lib/api/clientApi";
 import Link from "next/link";
 
 
