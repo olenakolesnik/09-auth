@@ -1,7 +1,7 @@
 import { cookies } from "next/headers";
-// import { api } from "./api";
+
 import { User } from "@/types/user";
-// import { Note } from "@/types/note";
+
 import axios from "axios";
 
 const API = axios.create({
@@ -9,19 +9,6 @@ const API = axios.create({
   withCredentials: true,
 });
 
-
-// export interface FetchNotesResponse {
-//   notes: Note[];
-//   totalPages: number;
-// }
-
-// interface FetchNotesParams {
-//   page?: number;
-//   search?: string;
-//   perPage?: number;
-//   tag?: string;
-// }
-// 
 
 export const getServerMe = async (): Promise<User> => {
     
