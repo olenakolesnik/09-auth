@@ -19,7 +19,11 @@ export const getCookieHeader = async (): Promise<string> => {
 export const checkSessionRaw = async (): Promise<
   AxiosResponse<CheckSessionRequest>
 > => {
-  return api.get<CheckSessionRequest>("/auth/session");
+  return api.get<CheckSessionRequest>("/auth/session", {
+    headers: {
+      Cookie: await getCookieHeader(),
+    },
+  });
 };
 
 export const getServerMe = async (): Promise<User> => {

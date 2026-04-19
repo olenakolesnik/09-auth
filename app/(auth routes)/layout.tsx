@@ -1,15 +1,14 @@
-import AuthProvider from "@/components/AuthProvider/AuthProvider";
+"use client";
 
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 
+export default function AuthProvider({ children }: { children: React.ReactNode }) {
+  const router = useRouter();
 
-export default function AuthLayout({
-    children,
-  }: {
-    children: React.ReactNode;
-  }) {
-    return (
-      <AuthProvider>
-        {children}
-      </AuthProvider>
-    );
-  }
+  useEffect(() => {
+    router.refresh();
+  }, [router]);
+
+  return <>{children}</>;
+}
