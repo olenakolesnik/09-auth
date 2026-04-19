@@ -12,4 +12,14 @@ export interface CreateNote {
     content: string;
     tag: string;
 }
-
+export interface FetchNotesResponse {
+    notes: Note[];
+    totalPages: number;
+  }
+  
+  export interface FetchNotesParams {
+    page?: number;
+    search?: string;
+    perPage?: number;
+    tag?: string;
+  }

@@ -4,7 +4,7 @@ import { parse } from "cookie";
 import { api } from "@/lib/api/api";
 
 
-const privateRoutes = ["/profile", "/profile/edit"];
+const privateRoutes = ["/profile/:path*", "/notes/:path*"];
 const publicRoutes = ["/sign-in", "/sign-up"];
 export async function proxy(request: NextRequest) {
     const { pathname } = request.nextUrl;

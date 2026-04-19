@@ -1,19 +1,8 @@
-import { Note } from "@/types/note";
+import { FetchNotesParams, FetchNotesResponse, Note } from "@/types/note";
 import type { User } from "../../types/user";
 import { api } from "./api";
+import { CheckSessionRequest } from "@/types/auth";
 
-
-export interface FetchNotesResponse {
-    notes: Note[];
-    totalPages: number;
-  }
-  
-  interface FetchNotesParams {
-    page?: number;
-    search?: string;
-    perPage?: number;
-    tag?: string;
-  }
 
 type RegisterRequest = {
     email: string;
@@ -29,9 +18,7 @@ export type CreateNotePayload = {
     content: string;
     tag: "Todo" | "Work" | "Personal" | "Meeting" | "Shopping";
 };
-export type CheckSessionRequest = {
-    success: boolean;
-};
+
 export const checkSession = async (): Promise<CheckSessionRequest> => {
     const res = await api.get<CheckSessionRequest>("/auth/session");
     return res.data;
@@ -55,7 +42,13 @@ export const logout = async (): Promise<void> => {
     await api.post("/auth/logout");
 }
 
-  
+export const updateMe = async (
+    data: { username: string }
+  ): Promise<User> => {
+    const res = await api.patch<User>("/users/me", data);
+    return res.data;
+  }; 
+
 export const createNote = async (payload: CreateNotePayload): Promise<Note> => {
     const { data } = await api.post("/notes", payload);
     return data;
